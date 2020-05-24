@@ -9,6 +9,7 @@ import 'package:rxdart/subjects.dart';
 
 import '../Location.dart';
 import '../main.dart';
+import '../Database.dart';
 
 class MessageInputPage extends StatefulWidget{
   @override
@@ -77,6 +78,7 @@ class MapPageState extends State<MapPage> {
   RestartableTimer locationTimer;
   List<LatLng> markersPosition;
   Stream<List<DocumentSnapshot>> stream;
+  Database db;
 
   BehaviorSubject<LatLng> positionController = BehaviorSubject<LatLng>();
 
