@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'routes/StatefulWidgets.dart';
+
+import 'widgets/welcome_page.dart';
 
 void main() {
   runApp(MaterialApp(

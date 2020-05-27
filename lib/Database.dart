@@ -10,13 +10,6 @@ class Database{
     _dbGeo = Geoflutterfire();
   }
 
-  Future<Position> getCurrentLocation(){
-    final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-
-    return geolocator
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-  }
-
   Stream<List<DocumentSnapshot>> getNearbyMessages(double curLatitude, double curLongitude, double radius){
     GeoFirePoint center = _dbGeo.point(latitude: curLatitude, longitude: curLongitude);
     
