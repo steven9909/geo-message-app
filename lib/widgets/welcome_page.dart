@@ -51,7 +51,7 @@ class WelcomeState extends State<WelcomePage>{
       centerWidget = new RaisedButton(child: new Text("Proceed", style: new TextStyle(color: Colors.lightBlue)), 
         shape: RoundedRectangleBorder(borderRadius:  BorderRadius.circular(18.0), side: BorderSide(color: Colors.white)), 
         onPressed: (){
-          Navigator.pushReplacement(context, createAnimatedRoute(new MapPage(_currentPosition)));
+          Navigator.pushReplacement(context, createAnimatedRoute(new MapPage(initialPosition: _currentPosition)));
         }
       );
     }

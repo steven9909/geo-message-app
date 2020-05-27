@@ -16,7 +16,7 @@ class MapPage extends StatefulWidget {
 
   final Position initialPosition;
 
-  MapPage(Position currentPosition, {this.initialPosition});
+  MapPage({this.initialPosition});
 
   @override
   State<StatefulWidget> createState() => MapPageState();
@@ -39,6 +39,8 @@ class MapPageState extends State<MapPage> {
 
     db = new Database();
 
+    currentPosition = widget.initialPosition;
+
     locationTimer = new RestartableTimer(Duration(seconds: 30),(){
       Location.getCurrentLocation().then((pos){
         currentPosition = pos;
@@ -60,6 +62,7 @@ class MapPageState extends State<MapPage> {
     if(markersPosition == null){
       markersPosition = new List<LatLng>();
     }
+
     super.initState();
   }
 
@@ -103,7 +106,8 @@ class MapPageState extends State<MapPage> {
             color: Colors.transparent,
             child: IconButton(
               icon: Icon(Icons.location_on),
-              color: Colors.white,  
+              iconSize: 30,
+              color: Colors.blue,  
               onPressed: (){
                 db.getMessage(latlng.latitude, latlng.longitude).then((value){
                   if(value.documents.length > 0){
@@ -129,7 +133,7 @@ class MapPageState extends State<MapPage> {
               
               mapController: mapController,
               options: new MapOptions(
-                center: new LatLng(0, 0),
+                center: new LatLng(currentPosition.latitude, currentPosition.longitude),
                 zoom: 13.0,
               ),
               layers: [
@@ -145,16 +149,19 @@ class MapPageState extends State<MapPage> {
             onPressed: centerToCurrentPosition, 
             shape: RoundedRectangleBorder(borderRadius:  BorderRadius.circular(18.0), side: BorderSide(color: Colors.white)),
             child: Text("Center To Me", style: TextStyle(color: Colors.white)))),
-          Align(alignment: Alignment.topRight, child: Material(
-            color: Colors.transparent,
-            child: IconButton(
-              icon: Icon(Icons.message),
-              color: Colors.white,  
-              onPressed: (){
-                if(currentPosition != null){
-                  navigateAndDisplayMessagePage(context);
+          Align(alignment: Alignment.topRight, child: Container(
+            margin: EdgeInsets.only(top: 5),
+            child: Material(
+              color: Colors.transparent,
+              child: IconButton(
+                icon: Icon(Icons.message),
+                color: Colors.lightBlueAccent,  
+                onPressed: (){
+                  if(currentPosition != null){
+                    navigateAndDisplayMessagePage(context);
+                  }
                 }
-              }
+              )
             )
           )
         )
