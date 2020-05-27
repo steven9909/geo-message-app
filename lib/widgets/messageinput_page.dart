@@ -11,18 +11,21 @@ class MessageInputPageState extends State<MessageInputPage>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: TextField(
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: 'Enter any messages upto 200 characters'
+      backgroundColor: Colors.lightBlue,
+      body: Container(
+        margin: EdgeInsets.only(left: 10, right: 10),
+        child: Center(
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: 'Enter upto 200 characters'
+            ),
+            maxLength: 200,
+            onSubmitted: (text){
+              Navigator.pop(context, text);
+            },
           ),
-          maxLength: 200,
-          onSubmitted: (text){
-            Navigator.pop(context, text);
-          },
-        ),
-      ),
+        )
+      )
     );
   }
   
