@@ -1,13 +1,16 @@
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:geolocator/geolocator.dart';
+
+import 'database_limit.dart';
 
 class Database{
 
   Geoflutterfire _dbGeo;
+  DatabaseLimiter limiter;
 
   Database(){
     _dbGeo = Geoflutterfire();
+    limiter = new DatabaseLimiter();
   }
 
   Stream<List<DocumentSnapshot>> getNearbyMessages(double curLatitude, double curLongitude, double radius){
@@ -26,10 +29,13 @@ class Database{
   }
 
   void addLocationToDb(double latitude, double longitude, String message){
-    Firestore.instance.collection("Location").add({
-      "message" : message,
-      "coordinate" : _dbGeo.point(latitude: latitude, longitude: longitude).data
-    });
+    if(limiter.canSubmitToDb()){
+      Firestore.instance.collection("Location").add({
+        "message" : message,
+        "coordinate" : _dbGeo.point(latitude: latitude, longitude: longitude).data
+      });
+      limiter.submit();
+    }
   }
   
 }
