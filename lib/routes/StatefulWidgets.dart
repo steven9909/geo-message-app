@@ -11,6 +11,77 @@ import '../Location.dart';
 import '../main.dart';
 import '../Database.dart';
 
+
+class WelcomePage extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() => WelcomeState();
+}
+
+class WelcomeState extends State<WelcomePage>{
+
+  String _displayMessage;
+  Position _currentPosition;
+
+  @override
+  void initState(){
+
+    _displayMessage = "Welcome to GeoMessage.\nPlease wait while we attempt to locate you!";
+    setAndGetLocation();
+
+    super.initState();
+  }
+
+  void setAndGetLocation(){
+    Location.getCurrentLocation().then((position){
+      setState(() {
+        _currentPosition = position;
+        _displayMessage = "Click the button below to get started!";
+      });
+    }).catchError((error){
+      setState(() {
+        _currentPosition = null;
+        _displayMessage = "We couldn't get your location. Please try again later.";
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    
+    var centerWidget;
+
+    if(_currentPosition == null){
+      centerWidget = new CircularProgressIndicator();
+    }
+    else {
+      centerWidget = new RaisedButton(child: new Text("Proceed", style: new TextStyle(color: Colors.lightBlue)), 
+        shape: RoundedRectangleBorder(borderRadius:  BorderRadius.circular(18.0), side: BorderSide(color: Colors.white)), 
+        onPressed: (){
+          Navigator.pushReplacement(context, createAnimatedRoute(new MapPage(_currentPosition)));
+        }
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.lightBlue,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget> [
+            Text(_displayMessage,style: TextStyle(color: Colors.white), textAlign: TextAlign.center),
+            centerWidget
+          ]
+        ),
+      )
+    );
+  }
+
+}
+
+
+
 class MessageInputPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() => MessageInputPageState();
@@ -40,7 +111,7 @@ class MessageInputPageState extends State<MessageInputPage>{
 
 class MessageOutputPage extends StatefulWidget{
 
-  String displayMessage;
+  final String displayMessage;
   MessageOutputPage({this.displayMessage});
 
   @override 
@@ -67,6 +138,12 @@ class MessageOutputPageState extends State<MessageOutputPage>{
 
 class MapPage extends StatefulWidget {
 
+  Position initialPosition;
+
+  MapPage(Position initialPosition){
+    this.initialPosition = initialPosition;
+  }
+
   @override
   State<StatefulWidget> createState() => MapPageState();
 }
@@ -85,16 +162,21 @@ class MapPageState extends State<MapPage> {
   @override
   void initState(){
     mapController = MapController();
+
+    db = new Database();
+
     locationTimer = new RestartableTimer(Duration(seconds: 30),(){
       Location.getCurrentLocation().then((pos){
         currentPosition = pos;
         positionController.add(new LatLng(currentPosition.latitude,currentPosition.longitude));
         locationTimer.reset();
+      }).catchError((err){
+        currentPosition = null;
       });
     });
 
     stream = positionController.switchMap((pos){
-      return Location.getNearbyMessages(pos.latitude, pos.longitude, 20);
+      return db.getNearbyMessages(pos.latitude, pos.longitude, 20);
     });
 
     stream.listen((event) {
@@ -132,19 +214,7 @@ class MapPageState extends State<MapPage> {
 
   void navigateAndDisplayMessagePage(BuildContext context) async{
     var result = await Navigator.push(context, createAnimatedRoute(MessageInputPage()));
-    /*
-    List<LatLng> newMarkersPosition = new List<LatLng>();
-    markersPosition.forEach((element) {
-      newMarkersPosition.add(new LatLng(element.latitude,element.longitude));
-    });
-    newMarkersPosition.add(new LatLng(currentPosition.latitude,currentPosition.longitude));
-    */
-    Location.addLocationToDb(currentPosition.latitude, currentPosition.longitude, result);
-    /*
-    setState(() {
-      markersPosition = newMarkersPosition;
-    });
-    */
+    db.addLocationToDb(currentPosition.latitude, currentPosition.longitude, result);
   }
 
   Widget build(BuildContext context) {
@@ -161,10 +231,10 @@ class MapPageState extends State<MapPage> {
               icon: Icon(Icons.location_on),
               color: Colors.white,  
               onPressed: (){
-                Location.getMessage(latlng.latitude, latlng.longitude).then((value){
+                db.getMessage(latlng.latitude, latlng.longitude).then((value){
                   if(value.documents.length > 0){
                     String msg = value.documents[0].data["message"];
-                    Location.deleteMessage(value.documents[0]).then((placeholder){
+                    db.deleteMessage(value.documents[0]).then((placeholder){
                         markersPosition.removeWhere((marker){
                           return marker.latitude == latlng.latitude && marker.longitude == latlng.longitude;
                         });
