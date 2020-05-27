@@ -150,11 +150,12 @@ class MapPageState extends State<MapPage> {
             shape: RoundedRectangleBorder(borderRadius:  BorderRadius.circular(18.0), side: BorderSide(color: Colors.white)),
             child: Text("Center To Me", style: TextStyle(color: Colors.white)))),
           Align(alignment: Alignment.topRight, child: Container(
-            margin: EdgeInsets.only(top: 5),
+            margin: EdgeInsets.only(top: 10),
             child: Material(
               color: Colors.transparent,
               child: IconButton(
                 icon: Icon(Icons.message),
+                iconSize: 30,
                 color: Colors.lightBlueAccent,  
                 onPressed: (){
                   if(currentPosition != null){
