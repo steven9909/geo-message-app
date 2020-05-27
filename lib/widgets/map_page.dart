@@ -141,9 +141,10 @@ class MapPageState extends State<MapPage> {
               ],
             )
           ),
-          Align(alignment: Alignment.bottomCenter, child: new FlatButton(color: Colors.blue.withOpacity(0.3), 
+          Align(alignment: Alignment.bottomCenter, child: new FlatButton(color: Colors.blue.withOpacity(0.5), 
             onPressed: centerToCurrentPosition, 
-            child: Text("Center To Me", style: TextStyle(color: Colors.lightBlue)))),
+            shape: RoundedRectangleBorder(borderRadius:  BorderRadius.circular(18.0), side: BorderSide(color: Colors.white)),
+            child: Text("Center To Me", style: TextStyle(color: Colors.white)))),
           Align(alignment: Alignment.topRight, child: Material(
             color: Colors.transparent,
             child: IconButton(
