@@ -27,3 +27,5 @@ This marker is visible to anyone within a certain radius (depends on the setting
 
 <img src="https://github.com/steven9909/GeoMessageApp/blob/master/assets/images/message_viewed.png" width="350"/>
 <img src="https://github.com/steven9909/GeoMessageApp/blob/master/assets/images/message_gone.png" width="350"/>
+
+This works with any number of users.
